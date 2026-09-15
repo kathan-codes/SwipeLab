@@ -5,6 +5,19 @@
   --foreground: #f4f4f5;
   --card-bg: #18181b;
   --card-border: rgba(255, 255, 255, 0.08);
+  --header-bg: rgba(9, 9, 11, 0.85);
+  --tab-bg: rgba(24, 24, 27, 0.9);
+  --panel-bg: #18181b;
+}
+
+[data-theme="light"] {
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(250, 250, 249, 0.85);
+  --tab-bg: rgba(245, 245, 244, 0.9);
+  --panel-bg: #ffffff;
 }
 
 body {
@@ -15,6 +28,7 @@ body {
   user-select: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Prevent accidental browser gestures and selection during card swiping */
@@ -31,11 +45,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(150, 150, 150, 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(150, 150, 150, 0.35);
 }
 
 /* Tactile shadow styling */
@@ -47,4 +61,58 @@ body {
 .card-shadow-active {
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.85),
               0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+/* Light mode overrides for container backgrounds if needed */
+[data-theme="light"] .bg-zinc-950 {
+  background-color: #fafaf9 !important;
+}
+
+[data-theme="light"] .bg-zinc-900 {
+  background-color: #f5f5f4 !important;
+}
+
+[data-theme="light"] .bg-zinc-800 {
+  background-color: #e7e5e4 !important;
+}
+
+[data-theme="light"] .text-white {
+  color: #1c1917 !important;
+}
+
+[data-theme="light"] .text-zinc-100 {
+  color: #1c1917 !important;
+}
+
+[data-theme="light"] .text-zinc-200 {
+  color: #292524 !important;
+}
+
+[data-theme="light"] .text-zinc-300 {
+  color: #44403c !important;
+}
+
+[data-theme="light"] .text-zinc-400 {
+  color: #78716c !important;
+}
+
+[data-theme="light"] .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .border-white\/5 {
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .border-white\/15 {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"] .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"] .bg-zinc-950\/60,
+[data-theme="light"] .bg-zinc-950\/40 {
+  background-color: rgba(245, 245, 244, 0.7) !important;
 }

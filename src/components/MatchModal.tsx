@@ -6,16 +6,22 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, MessageCircle, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Profile } from '../types/profile';
+import { hapticMatch } from '../utils/haptics';
 
 interface MatchModalProps {
   matchedProfile: Profile | null;
   onClose: () => void;
+  onOpenChat?: (profile: Profile) => void;
 }
 
-export const MatchModal: React.FC<MatchModalProps> = ({ matchedProfile, onClose }) => {
+export const MatchModal: React.FC<MatchModalProps> = ({
+  matchedProfile,
+  onClose,
+  onOpenChat,
+}) => {
   useEffect(() => {
     if (matchedProfile) {
-      // Elegant, restrained confetti burst
+      hapticMatch();
       try {
         confetti({
           particleCount: 50,
@@ -24,11 +30,10 @@ export const MatchModal: React.FC<MatchModalProps> = ({ matchedProfile, onClose 
           colors: ['#10b981', '#f43f5e', '#38bdf8', '#fbbf24'],
           disableForReducedMotion: true,
         });
-      } catch (e) {
-        // Fallback gracefully if canvas unavailable
+      } catch {
+        // Fallback gracefully
       }
 
-      // Close on Escape key
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
       };
@@ -46,7 +51,7 @@ export const MatchModal: React.FC<MatchModalProps> = ({ matchedProfile, onClose 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-sm rounded-3xl bg-zinc-900 border border-white/15 p-6 text-center shadow-2xl overflow-hidden"
+            className="relative w-full max-w-sm rounded-3xl bg-zinc-900 border border-white/15 p-6 text-center shadow-2xl overflow-hidden text-zinc-100"
           >
             {/* Close button */}
             <button
@@ -73,7 +78,7 @@ export const MatchModal: React.FC<MatchModalProps> = ({ matchedProfile, onClose 
 
             {/* Interlocking Portrait Avatars */}
             <div className="relative w-44 h-28 mx-auto mb-6 flex items-center justify-center">
-              {/* User Avatar Placeholder */}
+              {/* User Avatar */}
               <div className="absolute left-4 w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-400 shadow-xl rotate-[-6deg] bg-zinc-800">
                 <Image
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80"
@@ -96,22 +101,27 @@ export const MatchModal: React.FC<MatchModalProps> = ({ matchedProfile, onClose 
 
             {/* Action Buttons */}
             <div className="space-y-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-full py-3.5 px-4 rounded-xl bg-white text-zinc-950 hover:bg-zinc-200 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
-              >
-                <span>Keep Discovering</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {onOpenChat ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenChat(matchedProfile);
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Message {matchedProfile.name}</span>
+                </button>
+              ) : null}
 
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full py-2.5 px-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 font-medium text-xs transition-colors border border-white/5 flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs transition-all flex items-center justify-center gap-1.5"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Simulate Icebreaker Note</span>
+                <span>Keep Discovering</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </motion.div>

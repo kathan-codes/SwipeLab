@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate, PanInfo } from 'motion/react';
 import { Profile, SwipeDirection } from '../types/profile';
 import { ProfileCard } from './ProfileCard';
+import { hapticThreshold, hapticButton } from '../utils/haptics';
 
 interface SwipeCardProps {
   profile: Profile;
@@ -12,6 +13,7 @@ interface SwipeCardProps {
   onDragProgress?: (progress: number) => void; // -1 to 1 (left to right)
   forcedSwipe?: SwipeDirection | null;
   onForcedSwipeComplete?: () => void;
+  onOpenDetails?: () => void;
 }
 
 const SWIPE_THRESHOLD = 110;
@@ -24,10 +26,12 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   onDragProgress,
   forcedSwipe,
   onForcedSwipeComplete,
+  onOpenDetails,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const hasVibratedThreshold = useRef(false);
 
   // Dynamic rotation derived from horizontal displacement
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
@@ -38,13 +42,22 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const passOpacity = useTransform(x, [-20, -110], [0, 1]);
   const passScale = useTransform(x, [-20, -110], [0.85, 1.05]);
 
-  // Track drag progress for underlying card reaction
+  // Track drag progress for underlying card reaction and haptic trigger
   useEffect(() => {
     if (!isTopCard) return;
     const unsubscribe = x.on('change', (latest) => {
       if (onDragProgress) {
         const clamped = Math.max(-1, Math.min(1, latest / 150));
         onDragProgress(clamped);
+      }
+
+      // Haptic feedback when crossing threshold
+      const absX = Math.abs(latest);
+      if (absX >= SWIPE_THRESHOLD && !hasVibratedThreshold.current) {
+        hapticThreshold();
+        hasVibratedThreshold.current = true;
+      } else if (absX < SWIPE_THRESHOLD && hasVibratedThreshold.current) {
+        hasVibratedThreshold.current = false;
       }
     });
     return () => unsubscribe();
@@ -55,6 +68,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     if (forcedSwipe && isTopCard) {
       const targetX = forcedSwipe === 'right' ? 850 : -850;
       const targetRotate = forcedSwipe === 'right' ? 22 : -22;
+
+      hapticButton();
 
       Promise.all([
         animate(x, targetX, { duration: 0.38, ease: [0.32, 0.72, 0, 1] }),
@@ -71,7 +86,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     info: PanInfo
   ) => {
     const offsetX = info.offset.x;
+    const offsetY = info.offset.y;
     const velocityX = info.velocity.x;
+
+    // Distinguish intentional tap vs drag
+    if (Math.abs(offsetX) < 6 && Math.abs(offsetY) < 6 && onOpenDetails) {
+      onOpenDetails();
+      return;
+    }
 
     const isSwipedRight =
       offsetX > SWIPE_THRESHOLD || velocityX > SWIPE_VELOCITY_THRESHOLD;
@@ -94,6 +116,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       });
     } else {
       // Below threshold: smooth physical spring return
+      hasVibratedThreshold.current = false;
       animate(x, 0, {
         type: 'spring',
         stiffness: 450,
@@ -130,7 +153,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       onDragEnd={handleDragEnd}
       className="relative w-full h-full cursor-grab active:cursor-grabbing swipe-card-container will-change-transform select-none"
     >
-      <ProfileCard profile={profile} isTopCard={true} />
+      <ProfileCard
+        profile={profile}
+        isTopCard={true}
+        onOpenDetails={onOpenDetails}
+      />
 
       {/* LIKE Stamp (Right Swipe) */}
       <motion.div

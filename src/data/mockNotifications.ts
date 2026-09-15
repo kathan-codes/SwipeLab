@@ -1,0 +1,48 @@
+import { NotificationItem } from '../types/profile';
+
+export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
+  {
+    id: 'notif-1',
+    type: 'like',
+    title: 'Maya liked your profile',
+    description: 'Shared interest: Photography and Coffee',
+    timestamp: '5m ago',
+    read: false,
+    profileId: 'profile-1',
+    profileName: 'Maya',
+    profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+  },
+  {
+    id: 'notif-2',
+    type: 'match',
+    title: 'You matched with Riya',
+    description: 'Start a conversation now or explore common interests',
+    timestamp: '1h ago',
+    read: false,
+    profileId: 'profile-3',
+    profileName: 'Riya',
+    profileImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80',
+  },
+  {
+    id: 'notif-3',
+    type: 'superlike',
+    title: 'Arjun sent you a special like',
+    description: 'Highlighted note on sustainable design',
+    timestamp: '3h ago',
+    read: true,
+    profileId: 'profile-2',
+    profileName: 'Arjun',
+    profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+  },
+  {
+    id: 'notif-4',
+    type: 'voice',
+    title: 'Maya sent you a voice message',
+    description: 'Tap to listen to a 7-second voice memo',
+    timestamp: 'Yesterday',
+    read: true,
+    profileId: 'profile-1',
+    profileName: 'Maya',
+    profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+  },
+];
